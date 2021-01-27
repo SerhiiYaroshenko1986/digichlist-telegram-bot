@@ -1,3 +1,7 @@
 {
-    "token": "Your token here"
+    "token": "1481906529:AAERv_phNLs9Lf774Hd-DCZsC2dV-_be_s8",
+    "baseUrl": "http://localhost:5000/api/",
+    "photoPathUrl": "https://api.telegram.org/bot1481906529:AAERv_phNLs9Lf774Hd-DCZsC2dV-_be_s8/getFile?file_id=",
+    "photoUrl": "https://api.telegram.org/file/bot1481906529:AAERv_phNLs9Lf774Hd-DCZsC2dV-_be_s8/",
+    "getUpdatesUrl": "https://api.telegram.org/bot1481906529:AAERv_phNLs9Lf774Hd-DCZsC2dV-_be_s8/getUpdates"
 }
