@@ -17,10 +17,17 @@ class BotButtons {
       { columns: 2 }
     ).extra();
   }
-  detailsBtn(index) {
-    return Markup.inlineKeyboard([Markup.callbackButton("Деталі", index)], {
-      columns: 2,
-    }).extra();
+  detailsBtn(id) {
+    return Markup.inlineKeyboard(
+      [
+        Markup.callbackButton("Показати фото", "yes"),
+        Markup.callbackButton("В роботі", id),
+        Markup.callbackButton("Закрити", id),
+      ],
+      {
+        columns: 3,
+      }
+    ).extra();
   }
   getAllFeatures() {
     return Markup.keyboard([

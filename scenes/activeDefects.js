@@ -9,7 +9,6 @@ const buttons = new botButtons();
 
 module.exports = active = new Scene("active");
 
-let attachmentId = [];
 let defects = [];
 active.action("yes", async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
@@ -29,9 +28,11 @@ const getDeffects = (ctx) => {
     .getAllDefects("defect/all")
     .then((res) => {
       defects = res.data.defects;
-      const rooms = activeRender.defectsByRoom(defects);
-      createAction(rooms);
-      activeRender.getRooms(rooms, ctx);
+      console.log(defects);
+      // return activeRender.getDefects(ctx, defects, attachmentId);
+      // const rooms = activeRender.defectsByRoom(defects);
+      // createAction(rooms);
+      // activeRender.getRooms(rooms, ctx);
     })
     .catch((err) => {
       console.log(err);
