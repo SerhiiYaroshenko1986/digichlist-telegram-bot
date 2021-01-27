@@ -14,10 +14,10 @@ const createDefect = (ctx) => {
     .then((res) => {
       console.log(res);
       ctx.reply(`Дефект успішно збережено\nпід номером ${res.data.defect._id}`);
-      bot.telegram.sendMessage(
-        1288065659,
-        `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
-      );
+      // bot.telegram.sendMessage(
+      //   1288065659,
+      //   `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
+      // );
     })
     .catch((err) => {
       ctx.reply("Дефект не збережено. Зображення завелике");
