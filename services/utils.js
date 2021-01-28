@@ -20,8 +20,7 @@ class Requests {
   getAllDefects(url) {
     return axios.get(config.baseUrl + url);
   }
-  getDefectsByDate(url, params) {
-    console.log(params);
+  getDefectsByQuery(url, params) {
     return axios.get(config.baseUrl + url, { params: params });
   }
   getDefectsById(url, id) {
@@ -29,6 +28,9 @@ class Requests {
   }
   getUpdates() {
     return axios.get(config.getUpdatesUrl);
+  }
+  updateDefectStatus(id, body) {
+    return axios.patch(config.baseUrl + "defect/update/" + id, body);
   }
 }
 

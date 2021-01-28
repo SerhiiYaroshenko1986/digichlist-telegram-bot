@@ -7,12 +7,21 @@ const auth = require("./scenes/authScene");
 const dash = require("./scenes/dasnboardScene");
 const active = require("./scenes/activeDefects");
 const searchByDate = require("./scenes/defectsByDateScene");
+const fixingDefects = require("./scenes/fixingDefects");
 const botButtons = require("./keyboards/keyboard");
 const mainMenuBtn = new botButtons();
 
 //bot.use(Telegraf.log());
 
-const stage = new Stage([userInfo, defect, auth, dash, active, searchByDate]);
+const stage = new Stage([
+  userInfo,
+  defect,
+  auth,
+  dash,
+  active,
+  searchByDate,
+  fixingDefects,
+]);
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -29,8 +38,11 @@ bot.hears("додати дефект", async (ctx) => {
   ctx.scene.enter("new");
 });
 
-bot.hears("список дефектів за датою", async (ctx) => {
+bot.hears("список активних дефектів за датою", async (ctx) => {
   ctx.scene.enter("date");
+});
+bot.hears("список дефектів в роботі", async (ctx) => {
+  ctx.scene.enter("fix");
 });
 bot.hears("вхід", async (ctx) => {
   ctx.scene.enter("auth");

@@ -9,51 +9,47 @@ const serviceRequest = new Requests();
 const Render = require("../services/render");
 const activeRender = new Render();
 
-let attachmentId = [];
-module.exports = defect = new Scene("date");
-defect.enter(async (ctx) => {
+let payload = {};
+let defects = [];
+let defectId = "";
+let actionTriger = [];
+module.exports = date = new Scene("date");
+date.enter(async (ctx) => {
   await ctx.reply(
     "Введіть дату (у форматі дд/мм/рррр)",
     buttons.exitKeyboard()
   );
 });
-defect.action("yes", async (ctx) => {
+date.hears("в головне меню", (ctx) => ctx.scene.enter("dash"));
+date.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
-    activeRender.showPicture(ctx, attachmentId);
+    ctx.reply("Будь ласка введіть причину");
+  } else {
+    activeRender.changeDefectStatus(ctx, defectId, payload);
   }
 });
-defect.hears("в головне меню", (ctx) => ctx.scene.enter("dash"));
-defect.on("text", (ctx) => {
-  const startDate = ctx.message.text;
-  getDefectsDate(ctx, startDate);
+
+date.on("text", async (ctx) => {
+  payload.close_reason = ctx.message.text;
+  getDefectsDate(ctx);
+  activeRender.changeDefectStatus(ctx, defectId, payload);
 });
 
-const createAction = (triger) => {
-  console.log(triger);
-  defect.action(triger, async (ctx) => {
-    const room = ctx.callbackQuery.data;
-    activeRender.getDefectByRoom(room, ctx, defects, attachmentId);
-  });
-};
-const getDefectsDate = (ctx, startDate) => {
-  //const start = new Date(Date.now());
-  //   const end = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
-  //const endHours = new Date(new Date().setHours(new Date().getHours() - 1));
-
-  const start = moment(startDate, "DD MM YYYY L").format();
+const getDefectsDate = (ctx) => {
+  const start = ctx.message.txt;
   const status = "open";
-  params = { start: start, status: status };
+  const date_type = "open_date";
+  params = { start: start, status: status, date_type: date_type };
   serviceRequest
-    .getDefectsByDate("defect/getByDate", params)
+    .getDefectsByQuery("defect/getByDateAndStatus/", params)
     .then((res) => {
-      if (res.data.defects.length > 0) {
-        defects = res.data.defects;
-        const rooms = activeRender.defectsByRoom(defects);
-        createAction(rooms);
-        activeRender.getRooms(rooms, ctx);
+      console.log(res);
+      defects = res.data.defects;
+      if (defects.length === 0) {
+        ctx.reply("Дефекти відсутні");
       } else {
-        ctx.reply("За вказаний період дефектів не знайдено");
-        ctx.scene.leave();
+        activeRender.getDefectsTemplate(ctx, defects, actionTriger);
+        activeRender.createAction(date, actionTriger, defects);
       }
     })
     .catch((err) => {

@@ -8,38 +8,44 @@ const botButtons = require("../keyboards/keyboard");
 const buttons = new botButtons();
 
 module.exports = active = new Scene("active");
-
+let payload = {};
 let defects = [];
-active.action("yes", async (ctx) => {
+let defectId = "";
+let actionTriger = [];
+active.hears("в головне меню", (ctx) => ctx.scene.enter("dash"));
+active.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
-    activeRender.showPicture(ctx, attachmentId);
+    ctx.reply("Будь ласка введіть причину");
+  } else {
+    activeRender.changeDefectStatus(ctx, payload);
   }
 });
 
-const createAction = (triger) => {
-  active.action(triger, async (ctx) => {
-    const room = ctx.callbackQuery.data;
-    activeRender.getDefectByRoom(room, ctx, defects, attachmentId);
-  });
-};
-
 const getDeffects = (ctx) => {
   serviceRequest
-    .getAllDefects("defect/all")
+    .getDefectsByQuery("defect/getByStatus/", { status: "open" })
     .then((res) => {
       defects = res.data.defects;
-      console.log(defects);
-      // return activeRender.getDefects(ctx, defects, attachmentId);
-      // const rooms = activeRender.defectsByRoom(defects);
-      // createAction(rooms);
-      // activeRender.getRooms(rooms, ctx);
+      if (defects.length === 0) {
+        ctx.reply("Дефекти відсутні");
+      } else {
+        activeRender.getDefectsTemplate(ctx, defects, actionTriger);
+        activeRender.createAction(active, actionTriger, defects);
+      }
     })
     .catch((err) => {
       console.log(err);
       return ctx.reply("Ви не авторизовані");
     });
 };
-
+active.on("text", async (ctx) => {
+  payload.close_reason = ctx.message.text;
+  activeRender.changeDefectStatus(ctx, defectId, payload);
+});
 active.enter(async (ctx) => {
+  ctx.reply(
+    "Тут ви можете здійснювати операції зі зміни статусу дефекту",
+    buttons.exitKeyboard()
+  );
   getDeffects(ctx);
 });

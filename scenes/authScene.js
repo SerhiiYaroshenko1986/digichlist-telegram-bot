@@ -7,11 +7,9 @@ auth.enter(async (ctx) => {
   serviceRequest
     .isAuth(`user/getByUsername/${ctx.from.id.toString()}`)
     .then((res) => {
-      if (res.data.response === "ok") {
-        console.log(ctx.message);
-
+      if (res.data.message === "User found") {
         ctx.scene.enter("dash", { response: true });
-      } else {
+      } else if (res.data.message === "No user") {
         ctx.reply("Ви ще не зареєстровані");
       }
     })

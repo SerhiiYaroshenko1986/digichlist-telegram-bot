@@ -12,15 +12,26 @@ const createDefect = (ctx) => {
   serviceRequest
     .postRequest("defect/create", payload)
     .then((res) => {
-      console.log(res);
-      ctx.reply(`Дефект успішно збережено\nпід номером ${res.data.defect._id}`);
-      // bot.telegram.sendMessage(
-      //   1288065659,
-      //   `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
-      // );
+      if (res.data.response === "ok") {
+        ctx.reply(
+          `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
+        );
+        bot.telegram.sendMessage(
+          941725387,
+          `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
+        );
+        if (res.data.defect.attachment_id !== "") {
+          bot.telegram.sendPhoto(941725387, res.data.defect.attachment_id);
+        }
+      }
     })
     .catch((err) => {
-      ctx.reply("Дефект не збережено. Зображення завелике");
+      console.log(err);
+      if (err.response.data.message === "Incorrect new defect data") {
+        ctx.reply("Перевірте правельність введених даних ");
+      } else {
+        console.log(err.response.data.message);
+      }
     });
 };
 const getPhotoBase64 = (path, ctx) => {
@@ -41,6 +52,7 @@ stepHandler.action(["yes", "no"], async (ctx) => {
     return ctx.wizard.next();
   } else {
     payload.attachment = "";
+    payload.attachment_id = "";
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   }

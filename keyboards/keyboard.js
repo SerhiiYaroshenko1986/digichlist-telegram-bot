@@ -20,18 +20,27 @@ class BotButtons {
   detailsBtn(id) {
     return Markup.inlineKeyboard(
       [
-        Markup.callbackButton("Показати фото", "yes"),
-        Markup.callbackButton("В роботі", id),
-        Markup.callbackButton("Закрити", id),
+        Markup.callbackButton("В роботі", `${id},fixing`),
+        Markup.callbackButton("Закрити", `${id},solved`),
       ],
       {
         columns: 3,
       }
     ).extra();
   }
+  fixingBtn(id) {
+    return Markup.inlineKeyboard([
+      Markup.callbackButton("Закрити", id),
+    ]).extra();
+  }
   getAllFeatures() {
     return Markup.keyboard([
-      ["додати дефект", "список активних дефектів", "список дефектів за датою"],
+      [
+        "додати дефект",
+        "список активних дефектів",
+        "список активних дефектів за датою",
+        "список дефектів в роботі",
+      ],
     ])
       .resize()
       .extra();
