@@ -30,6 +30,9 @@ class Requests {
   getUpdates() {
     return axios.get(config.getUpdatesUrl);
   }
+  postChecklist(url, body) {
+    return axios.post(config.baseUrl + url, body);
+  }
 }
 
 module.exports = Requests;
