@@ -14,27 +14,14 @@ const createOrder = (ctx) => {
     .then((res) => {
       console.log(res);
       ctx.reply(`Замовлення успішно збережено`);
-      // bot.telegram.sendMessage(
-      //   1288065659,
-      //   `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
-      // );
+      
     })
     .catch((err) => {
       console.log(err);
       ctx.reply("Замовлення не збережено.");
     });
 };
-// const getPhotoBase64 = (path, ctx) => {
-//   serviceRequest
-//     .getPhoto(path)
-//     .then((res) => {
-//       payload.attachment = `data:image/jpeg;base64,${res}`;
-//       createDefect(ctx);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// };
+
 
 stepHandler.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
