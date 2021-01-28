@@ -5,6 +5,7 @@ const userInfo = require("./scenes/rmeScene");
 const defect = require("./scenes/newDefectScene");
 const auth = require("./scenes/authScene");
 const dash = require("./scenes/dasnboardScene");
+const order = require("./scenes/orderScene");
 const active = require("./scenes/activeDefects");
 const searchByDate = require("./scenes/defectsByDateScene");
 const fixingDefects = require("./scenes/fixingDefects");
@@ -21,6 +22,7 @@ const stage = new Stage([
   active,
   searchByDate,
   fixingDefects,
+  order,
 ]);
 
 bot.use(session());
@@ -49,5 +51,8 @@ bot.hears("вхід", async (ctx) => {
 });
 bot.hears("список активних дефектів", async (ctx) => {
   ctx.scene.enter("active");
+});
+bot.hears("замовити", async (ctx) => {
+  ctx.scene.enter("order");
 });
 bot.launch();

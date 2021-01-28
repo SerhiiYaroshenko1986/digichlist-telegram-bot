@@ -32,6 +32,9 @@ class Requests {
   updateDefectStatus(id, body) {
     return axios.patch(config.baseUrl + "defect/update/" + id, body);
   }
+  postChecklist(url, body) {
+    return axios.post(config.baseUrl + url, body);
+  }
 }
 
 module.exports = Requests;
