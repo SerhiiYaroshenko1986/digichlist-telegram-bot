@@ -8,7 +8,10 @@ class Requests {
   postRequest(url, body) {
     return axios.post(config.baseUrl + url, body);
   }
-  isAuth(url, id) {
+  getRepairer(url) {
+    return axios.get(`${config.baseUrl}user/getByPosition/Repairer`);
+  }
+  isAuth(url) {
     return axios.get(`${config.baseUrl}${url}`);
   }
   getPhotoPath(id) {
@@ -20,8 +23,7 @@ class Requests {
   getAllDefects(url) {
     return axios.get(config.baseUrl + url);
   }
-  getDefectsByDate(url, params) {
-    console.log(params);
+  getDefectsByQuery(url, params) {
     return axios.get(config.baseUrl + url, { params: params });
   }
   getDefectsById(url, id) {
@@ -29,6 +31,9 @@ class Requests {
   }
   getUpdates() {
     return axios.get(config.getUpdatesUrl);
+  }
+  updateDefectStatus(id, body) {
+    return axios.patch(config.baseUrl + "defect/update/" + id, body);
   }
   postChecklist(url, body) {
     return axios.post(config.baseUrl + url, body);

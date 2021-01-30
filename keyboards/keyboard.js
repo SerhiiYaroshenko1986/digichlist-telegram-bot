@@ -1,4 +1,4 @@
-const { Markup } = require("telegraf");
+const { Markup, Extra } = require("telegraf");
 
 class BotButtons {
   getMainMenu() {
@@ -17,25 +17,32 @@ class BotButtons {
       { columns: 2 }
     ).extra();
   }
-  detailsBtn(index) {
-    return Markup.inlineKeyboard([Markup.callbackButton("Деталі", index)], {
-      columns: 2,
-    }).extra();
+  detailsBtn(id) {
+    return Extra.markup(
+      Markup.inlineKeyboard([
+        Markup.callbackButton("В роботі", `${id},fixing`),
+        Markup.callbackButton("Закрити", `${id},solved`),
+      ])
+    );
+  }
+  fixingBtn(id) {
+    return Extra.markup(
+      Markup.inlineKeyboard([Markup.callbackButton("Закрити", id)])
+    );
   }
   getAllFeatures() {
     return Markup.keyboard([
-      ["додати дефект", "список активних дефектів", "список дефектів за датою", "замовити"],
+      ["додати дефект", "не опрацьовані дефекти"],
+      ["не опрацьовані дефекти за датою", "дефекти в роботі"],
+      ["замовити"],
     ])
       .resize()
       .extra();
   }
-  showPhoto() {
-    return Markup.inlineKeyboard(
-      [Markup.callbackButton("Показати фото", "yes")],
-      {
-        columns: 2,
-      }
-    ).extra();
+  getCleanerFeatures() {
+    return Markup.keyboard([["додати дефект", "замовити"]])
+      .resize()
+      .extra();
   }
 }
 module.exports = BotButtons;

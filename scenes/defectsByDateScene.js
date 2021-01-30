@@ -1,4 +1,4 @@
-const Scene = require("telegraf/scenes/base");
+const WizardScene = require("telegraf/scenes/wizard");
 const Composer = require("telegraf");
 const botButtons = require("../keyboards/keyboard");
 const buttons = new botButtons();
@@ -9,54 +9,52 @@ const serviceRequest = new Requests();
 const Render = require("../services/render");
 const activeRender = new Render();
 
-let attachmentId = [];
-module.exports = defect = new Scene("date");
-defect.enter(async (ctx) => {
-  await ctx.reply(
-    "Введіть дату (у форматі дд/мм/рррр)",
-    buttons.exitKeyboard()
-  );
-});
-defect.action("yes", async (ctx) => {
-  if (ctx.callbackQuery.data === "yes") {
-    activeRender.showPicture(ctx, attachmentId);
-  }
-});
-defect.hears("в головне меню", (ctx) => ctx.scene.enter("dash"));
-defect.on("text", (ctx) => {
-  const startDate = ctx.message.text;
-  getDefectsDate(ctx, startDate);
-});
+let payload = {};
+let defects = [];
+let actionTriger = [];
+module.exports = date = new WizardScene(
+  "date",
+  async (ctx) => {
+    await ctx.reply("Введіть початкову дату (у форматі дд/мм/рррр)");
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    payload.start = ctx.message.text.toString();
+    await ctx.reply("Введіть кінцеву дату (у форматі дд/мм/рррр)");
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    payload.end = ctx.message.text;
+    getDefectsDate(ctx);
+  },
+  buttons.exitKeyboard()
+);
 
-const createAction = (triger) => {
-  console.log(triger);
-  defect.action(triger, async (ctx) => {
-    const room = ctx.callbackQuery.data;
-    activeRender.getDefectByRoom(room, ctx, defects, attachmentId);
-  });
-};
-const getDefectsDate = (ctx, startDate) => {
-  //const start = new Date(Date.now());
-  //   const end = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
-  //const endHours = new Date(new Date().setHours(new Date().getHours() - 1));
-
-  const start = moment(startDate, "DD MM YYYY L").format();
+const getDefectsDate = (ctx) => {
   const status = "open";
-  params = { start: start, status: status };
+  const date_type = "open_date";
+  params = {
+    status: status,
+    date_type: date_type,
+    start: payload.start.split("-").reverse().join("-"),
+    end: payload.end.split("-").reverse().join("-"),
+  };
   serviceRequest
-    .getDefectsByDate("defect/getByDate", params)
+    .getDefectsByQuery("defect/getByDateAndStatus", params)
     .then((res) => {
-      if (res.data.defects.length > 0) {
-        defects = res.data.defects;
-        const rooms = activeRender.defectsByRoom(defects);
-        createAction(rooms);
-        activeRender.getRooms(rooms, ctx);
-      } else {
-        ctx.reply("За вказаний період дефектів не знайдено");
+      console.log(res);
+      defects = res.data.defects;
+      if (defects.length === 0) {
+        ctx.reply("Дефекти відсутні");
         ctx.scene.leave();
+      } else {
+        activeRender.getDefectsTemplate(ctx, defects, actionTriger);
+        activeRender.createAction(date, actionTriger, defects);
       }
     })
     .catch((err) => {
+      ctx.reply("Некоректно введені дані");
       ctx.scene.leave();
+      console.log(err);
     });
 };

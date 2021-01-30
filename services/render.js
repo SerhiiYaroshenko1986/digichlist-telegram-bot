@@ -1,48 +1,93 @@
 const botButtons = require("../keyboards/keyboard");
 const buttons = new botButtons();
+const Requests = require("./utils");
+const serviceRequest = new Requests();
+
+const bot = require("../bot");
+const { Markup, Extra } = require("telegraf");
 class Render {
-  defectsByRoom(defects) {
-    const rooms = defects.map((elem) => elem.room);
-    const uniqeRooms = new Set(rooms);
-    return [...uniqeRooms];
-  }
-  getDefectByRoom(room, ctx, defects, attachmentId) {
-    const details = defects
-      .filter((elem) => elem.room === room)
-      .map((elem, index) => {
-        if (elem.attachment_id !== "") {
-          attachmentId.push({
-            type: "photo",
-            media: elem.attachment_id,
-          });
-        }
-        return `<i>${index + 1})</i> Опис пошкодження: <b><i>${
-          elem.title
-        }</i></b> під номером: ${elem._id}\n`;
-      })
-      .join("");
-    return ctx.replyWithHTML(
-      `Кімната: <b><i>${room}</i></b>\n${details}`,
-      buttons.showPhoto()
-    );
-  }
-  getRooms(rooms, ctx) {
-    return rooms.map((room) => {
-      return ctx.replyWithHTML(
-        `Кімната: <b><i>${room}</i></b>\n`,
-        buttons.detailsBtn(room)
-      );
+  defect_id = "";
+  payload = {};
+  status = "";
+  getDefectsTemplate(ctx, defects, actionTriger) {
+    const details = defects.map((elem) => {
+      actionTriger.push(`${elem._id},fixing`);
+      actionTriger.push(`${elem._id},solved`);
+      if (elem.attachment_id !== "" && elem.attachment_id !== "id") {
+        const send = buttons.detailsBtn(elem._id);
+        send.caption = `Дефект під номером ${elem._id}\nКімната: ${elem.room}\nОпис пошкодження ${elem.title}`;
+        ctx.replyWithPhoto(elem.attachment_id, send);
+      } else {
+        ctx.replyWithHTML(
+          `Дефект під номером <b><i>${elem._id}</i></b>\n
+           Кімната: <b><i>${elem.room}</i></b>\n
+           Опис пошкодження <b><i>${elem.title}</i></b>`,
+          buttons.detailsBtn(elem._id)
+        );
+      }
     });
+    return details;
   }
-  showPicture(ctx, attachmentId) {
-    if (
-      attachmentId.every((elem) => elem.media === "") ||
-      attachmentId.length === 0
-    ) {
-      return ctx.reply("Фото відсутні");
-    } else {
-      return ctx.replyWithMediaGroup(attachmentId);
-    }
+  getFixingDefects(ctx, defects, actionTriger) {
+    const details = defects.map((elem) => {
+      actionTriger.push(elem._id);
+      if (elem.attachment_id !== "" && elem.attachment_id !== "id") {
+        const send = buttons.fixingBtn(elem._id);
+        send.caption = `Дефект під номером: ${elem._id}\nКімната: ${elem.room}\nОпис пошкодження ${elem.title}`;
+        ctx.replyWithPhoto(elem.attachment_id, send);
+      } else {
+        ctx.replyWithHTML(
+          `Дефект під номером ${elem._id}\n
+           Кімната: <b><i>${elem.room}</i></b>\n
+           Опис пошкодження <b><i>${elem.title}</i></b>`,
+          buttons.fixingBtn(elem._id)
+        );
+      }
+    });
+    return details;
+  }
+
+  changeDefectStatus(ctx) {
+    serviceRequest
+      .updateDefectStatus(this.defect_id, this.payload)
+      .then((res) => {
+        console.log(res);
+        if (res.data.response === "ok") {
+          const changeStatus =
+            this.payload.status === "fixing" ? "в роботі" : "закритий";
+          ctx.replyWithHTML(
+            `Статус дефекту  успішно змінено на <b>${changeStatus}</b>`
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (
+          err.response.data.message ===
+            "This user is not in a position to update the defect information" ||
+          err.response.data.message ===
+            "The user is not in the system. To update the defect information, you must register and gain access."
+        ) {
+          ctx.reply("У Вас немає доступу для здійснення цієї операції");
+        } else {
+          console.log(err);
+        }
+      });
+  }
+  createAction(scene, actionTriger, defects) {
+    scene.action(actionTriger, async (ctx) => {
+      const response = ctx.callbackQuery.data.split(",");
+      this.defect_id = response[0];
+      this.status = response[1];
+      this.payload = defects.filter((elem) => elem._id === this.defect_id)[0];
+      this.payload.status = this.status;
+      this.payload.username = ctx.from.id.toString();
+      if (this.status === "fixing") {
+        this.changeDefectStatus(ctx);
+      } else if (this.status === "solved") {
+        ctx.reply("Бажаєте ввести причину закриття", buttons.yesNoKeyboard());
+      }
+    });
   }
 }
 

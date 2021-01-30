@@ -9,12 +9,12 @@ const bot = require("../bot");
 
 const payload = {};
 const createOrder = (ctx) => {
+  console.log(payload);
   serviceRequest
     .postChecklist("order/create", payload)
     .then((res) => {
       console.log(res);
       ctx.reply(`Замовлення успішно збережено`);
-      
     })
     .catch((err) => {
       console.log(err);
@@ -22,24 +22,12 @@ const createOrder = (ctx) => {
     });
 };
 
-
 stepHandler.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
     await ctx.reply("Введіть коментар");
     return ctx.wizard.next();
   } else {
-    payload.attachment = "";
-    ctx.wizard.next();
-    return ctx.wizard.steps[ctx.wizard.cursor](ctx);
-  }
-});
-
-stepHandler.action(["yes", "no"], async (ctx) => {
-  if (ctx.callbackQuery.data === "yes") {
-    await ctx.reply("Додати коментар?");
-    return ctx.wizard.next();
-  } else {
-    payload.note = "";
+    payload.note = "No description provided";
     ctx.wizard.next();
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   }
