@@ -3,19 +3,24 @@ const Requests = require("../services/utils");
 const serviceRequest = new Requests();
 module.exports = rme = new Scene("rme");
 rme.enter(async (ctx) => {
+  console.log(ctx.message);
   const requestBody = {
-    first_name: ctx.from.first_name,
-    last_name: ctx.from.last_name,
+    chat_id: ctx.message.chat.id.toString(),
+    first_name: ctx.from.first_name ? ctx.from.first_name : "",
+    last_name: ctx.from.last_name ? ctx.from.last_name : "",
     username: ctx.from.id.toString(),
   };
-  console.log(ctx.message);
   serviceRequest
     .postRequest("user/create", requestBody)
     .then((res) => {
-      //console.log(res);
+      console.log(res);
       ctx.reply(`Ваш запит вислано для підтвердження очікуйте на відповідь`);
     })
     .catch((err) => {
-      ctx.reply(`Ви уже зареєстровані`);
+      if (err.response.data.message.includes("duplicate key")) {
+        ctx.reply(`Ви уже зареєстровані`);
+      } else {
+        ctx.reply(`Сталась помилка на серсері спробуйте пізніше`);
+      }
     });
 });
