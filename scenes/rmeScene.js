@@ -5,9 +5,9 @@ module.exports = rme = new Scene("rme");
 rme.enter(async (ctx) => {
   console.log(ctx.message);
   const requestBody = {
-    chat_id: ctx.message.chat.id,
-    first_name: ctx.from.first_name,
-    last_name: ctx.from.last_name,
+    chat_id: ctx.message.chat.id.toString(),
+    first_name: ctx.from.first_name ? ctx.from.first_name : "",
+    last_name: ctx.from.last_name ? ctx.from.last_name : "",
     username: ctx.from.id.toString(),
   };
   serviceRequest

@@ -2,6 +2,9 @@ const botButtons = require("../keyboards/keyboard");
 const buttons = new botButtons();
 const Requests = require("./utils");
 const serviceRequest = new Requests();
+
+const bot = require("../bot");
+const { Markup, Extra } = require("telegraf");
 class Render {
   defect_id = "";
   payload = {};
@@ -11,26 +14,9 @@ class Render {
       actionTriger.push(`${elem._id},fixing`);
       actionTriger.push(`${elem._id},solved`);
       if (elem.attachment_id !== "" && elem.attachment_id !== "id") {
-        ctx.replyWithMediaGroup([
-          {
-            type: "photo",
-            media: elem.attachment_id,
-          },
-        ]);
-        ctx.replyWithHTML(
-          `Дефект під номером <b><i>${elem._id}</i></b>\n
-           Кімната: <b><i>${elem.room}</i></b>\n
-           Опис пошкодження <b><i>${elem.title}</i></b>`,
-          buttons.detailsBtn(elem._id)
-        );
-
-        // ctx.replyWithPhoto({
-        //   photo: elem.attachment_id,
-        //   caption: `Дефект під номером <b><i>${elem._id}</i></b>\n
-        // Кімната: <b><i>${elem.room}</i></b>\n
-        // Опис пошкодження <b><i>${elem.title}</i></b>`,
-        //   reply_markup: buttons.detailsBtn(elem._id),
-        // });
+        const send = buttons.detailsBtn(elem._id);
+        send.caption = `Дефект під номером ${elem._id}\nКімната: ${elem.room}\nОпис пошкодження ${elem.title}`;
+        ctx.replyWithPhoto(elem.attachment_id, send);
       } else {
         ctx.replyWithHTML(
           `Дефект під номером <b><i>${elem._id}</i></b>\n
@@ -45,19 +31,17 @@ class Render {
   getFixingDefects(ctx, defects, actionTriger) {
     const details = defects.map((elem) => {
       actionTriger.push(elem._id);
-      ctx.replyWithHTML(
-        `Дефект під номером ${elem._id}\n
-         Кімната: <b><i>${elem.room}</i></b>\n
-         Опис пошкодження ${elem.title}`,
-        buttons.fixingBtn(elem._id)
-      );
       if (elem.attachment_id !== "" && elem.attachment_id !== "id") {
-        ctx.replyWithMediaGroup([
-          {
-            type: "photo",
-            media: elem.attachment_id,
-          },
-        ]);
+        const send = buttons.fixingBtn(elem._id);
+        send.caption = `Дефект під номером: ${elem._id}\nКімната: ${elem.room}\nОпис пошкодження ${elem.title}`;
+        ctx.replyWithPhoto(elem.attachment_id, send);
+      } else {
+        ctx.replyWithHTML(
+          `Дефект під номером ${elem._id}\n
+           Кімната: <b><i>${elem.room}</i></b>\n
+           Опис пошкодження <b><i>${elem.title}</i></b>`,
+          buttons.fixingBtn(elem._id)
+        );
       }
     });
     return details;
@@ -67,6 +51,7 @@ class Render {
     serviceRequest
       .updateDefectStatus(this.defect_id, this.payload)
       .then((res) => {
+        console.log(res);
         if (res.data.response === "ok") {
           const changeStatus =
             this.payload.status === "fixing" ? "в роботі" : "закритий";
@@ -76,9 +61,12 @@ class Render {
         }
       })
       .catch((err) => {
+        console.log(err);
         if (
           err.response.data.message ===
-          "This user is not in a position to update the defect information"
+            "This user is not in a position to update the defect information" ||
+          err.response.data.message ===
+            "The user is not in the system. To update the defect information, you must register and gain access."
         ) {
           ctx.reply("У Вас немає доступу для здійснення цієї операції");
         } else {
@@ -93,6 +81,7 @@ class Render {
       this.status = response[1];
       this.payload = defects.filter((elem) => elem._id === this.defect_id)[0];
       this.payload.status = this.status;
+      this.payload.username = ctx.from.id.toString();
       if (this.status === "fixing") {
         this.changeDefectStatus(ctx);
       } else if (this.status === "solved") {

@@ -8,7 +8,11 @@ auth.enter(async (ctx) => {
     .isAuth(`user/getByUsername/${ctx.from.id.toString()}`)
     .then((res) => {
       if (res.data.message === "User found") {
-        ctx.scene.enter("dash", { response: true });
+        if (res.data.user.position === "Repairer") {
+          ctx.scene.enter("dashRep");
+        } else if (res.data.user.position === "Cleaner") {
+          ctx.scene.enter("dash");
+        }
       } else if (res.data.message === "No user") {
         ctx.reply("Ви ще не зареєстровані");
       }

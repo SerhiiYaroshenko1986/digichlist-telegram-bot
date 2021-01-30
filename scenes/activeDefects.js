@@ -12,7 +12,7 @@ let payload = {};
 let defects = [];
 let defectId = "";
 let actionTriger = [];
-active.hears("в головне меню", (ctx) => ctx.scene.enter("dash"));
+active.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
 active.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
     ctx.reply("Будь ласка введіть причину");

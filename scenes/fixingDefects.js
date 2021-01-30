@@ -12,7 +12,7 @@ let defects = [];
 let actionTriger = [];
 let defectId = "";
 let payload = {};
-fixDef.hears("в головне меню", (ctx) => ctx.scene.enter("dash"));
+fixDef.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
 fixDef.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
     ctx.reply("Будь ласка введіть причину");
@@ -29,7 +29,11 @@ const changeDefectStatus = (ctx, defectId) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      if (err.response.data.response === "notRepairer") {
+        ctx.reply("У Вас немає доступу для здійснення цієї операції");
+      } else {
+        console.log(err);
+      }
     });
 };
 const createAction = () => {
@@ -37,6 +41,7 @@ const createAction = () => {
     defectId = ctx.callbackQuery.data;
     payload = defects.filter((elem) => elem._id === defectId)[0];
     payload.status = "solved";
+    payload.username = ctx.from.id.toString();
     ctx.reply("Бажаєте ввести причину закриття", buttons.yesNoKeyboard());
   });
 };

@@ -8,6 +8,28 @@ const serviceRequest = new Requests();
 const bot = require("../bot");
 
 const payload = {};
+const sendMessageToFixer = (data) => {
+  serviceRequest
+    .getRepairer()
+    .then((res) => {
+      const fixersArr = res.data.users;
+      if (fixersArr.length !== 0) {
+        const chatIdArr = fixersArr.map((elem) => elem.chat_id);
+        chatIdArr.map((chatId) => {
+          bot.telegram.sendMessage(
+            chatId,
+            `Додано новий дефект \nпід номером ${data.defect._id}\nОпис пошкоджень: ${data.defect.title}`
+          );
+          if (data.defect.attachment_id !== "") {
+            bot.telegram.sendPhoto(chatId, data.defect.attachment_id);
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 const createDefect = (ctx) => {
   serviceRequest
     .postRequest("defect/create", payload)
@@ -16,19 +38,13 @@ const createDefect = (ctx) => {
         ctx.reply(
           `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
         );
-        bot.telegram.sendMessage(
-          941725387,
-          `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
-        );
-        if (res.data.defect.attachment_id !== "") {
-          bot.telegram.sendPhoto(941725387, res.data.defect.attachment_id);
-        }
+        sendMessageToFixer(res.data);
       }
     })
     .catch((err) => {
       console.log(err);
       if (err.response.data.message === "Incorrect new defect data") {
-        ctx.reply("Перевірте правельність введених даних ");
+        ctx.reply("Перевірте правильність введених даних ");
       } else {
         console.log(err.response.data.message);
       }
@@ -60,12 +76,12 @@ stepHandler.action(["yes", "no"], async (ctx) => {
 module.exports = deffect = new WizardScene(
   "new",
   async (ctx) => {
-    await ctx.reply("Введіть номер або назву кімнати");
+    await ctx.reply("Введіть номер або назву кімнати (максимум 20 символів)");
     return ctx.wizard.next();
   },
   async (ctx) => {
     payload.room = ctx.message.text.toString();
-    await ctx.reply("Введіть опис пошкодження");
+    await ctx.reply("Введіть опис пошкодження (мінімум 5 символів)");
     return ctx.wizard.next();
   },
   async (ctx) => {
@@ -75,7 +91,6 @@ module.exports = deffect = new WizardScene(
   },
   stepHandler,
   async (ctx) => {
-    payload.status = "open";
     payload.username = ctx.from.id.toString();
     if (ctx.message) {
       let filePath = "";

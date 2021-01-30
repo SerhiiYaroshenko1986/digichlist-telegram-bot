@@ -8,7 +8,10 @@ class Requests {
   postRequest(url, body) {
     return axios.post(config.baseUrl + url, body);
   }
-  isAuth(url, id) {
+  getRepairer(url) {
+    return axios.get(`${config.baseUrl}user/getByPosition/Repairer`);
+  }
+  isAuth(url) {
     return axios.get(`${config.baseUrl}${url}`);
   }
   getPhotoPath(id) {
