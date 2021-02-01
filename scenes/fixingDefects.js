@@ -12,12 +12,14 @@ let defects = [];
 let actionTriger = [];
 let defectId = "";
 let payload = {};
+let checkAction = false;
 fixDef.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
 fixDef.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
+    checkAction = true;
     ctx.reply("Будь ласка введіть причину");
   } else {
-    changeDefectStatus(ctx, defectId);
+    activeRender.changeDefectStatus(ctx);
   }
 });
 const changeDefectStatus = (ctx, defectId) => {
@@ -36,15 +38,15 @@ const changeDefectStatus = (ctx, defectId) => {
       }
     });
 };
-const createAction = () => {
-  fixDef.action(actionTriger, async (ctx) => {
-    defectId = ctx.callbackQuery.data;
-    payload = defects.filter((elem) => elem._id === defectId)[0];
-    payload.status = "solved";
-    payload.username = ctx.from.id.toString();
-    ctx.reply("Бажаєте ввести причину закриття", buttons.yesNoKeyboard());
-  });
-};
+// const createAction = () => {
+//   fixDef.action(actionTriger, async (ctx) => {
+//     defectId = ctx.callbackQuery.data;
+//     payload = defects.filter((elem) => elem._id === defectId)[0];
+//     payload.status = "solved";
+//     payload.username = ctx.from.id.toString();
+//     ctx.reply("Бажаєте ввести причину закриття", buttons.yesNoKeyboard());
+//   });
+// };
 
 const getFixingDefects = (ctx) => {
   serviceRequest
@@ -56,8 +58,15 @@ const getFixingDefects = (ctx) => {
       if (defects.length === 0) {
         ctx.reply("Дефекти відсутні");
       } else {
-        activeRender.getFixingDefects(ctx, defects, actionTriger);
-        createAction();
+        const feature = ["comment", "solved"];
+        activeRender.getDefectsTemplate(
+          ctx,
+          defects,
+          actionTriger,
+          feature,
+          buttons.fixingBtn
+        );
+        activeRender.createAction(fixDef, actionTriger, defects);
       }
     })
     .catch((err) => {
@@ -65,12 +74,26 @@ const getFixingDefects = (ctx) => {
     });
 };
 fixDef.on("text", async (ctx) => {
-  payload.close_reason = ctx.message.text;
-  changeDefectStatus(ctx, defectId);
+  if (checkAction) {
+    const closeReason = ctx.message.text;
+    activeRender.changeDefectStatus(ctx, closeReason);
+  } else {
+    checkAction = false;
+    console.log(ctx.message.text);
+    const comments = [
+      {
+        user: "",
+        username: "",
+        message: "",
+      },
+    ];
+    comments[0].message = ctx.message.text;
+    activeRender.getUser(ctx, comments);
+  }
 });
 fixDef.enter((ctx) => {
   ctx.reply(
-    "Тут ви можете здійснювати операції зі зміни статусу дефекту",
+    "Тут ви можете здійснювати операції зі зміни статусу дефекту  та залишати коментарі",
     buttons.exitKeyboard()
   );
   getFixingDefects(ctx);
