@@ -2,7 +2,7 @@ const { Markup, Extra } = require("telegraf");
 
 class BotButtons {
   getMainMenu() {
-    return Markup.keyboard([["реєстрація", "вхід"]])
+    return Markup.keyboard([["реєстрація", "вхід"], ["допомога"]])
       .resize()
       .extra();
   }
@@ -27,7 +27,10 @@ class BotButtons {
   }
   fixingBtn(id) {
     return Extra.markup(
-      Markup.inlineKeyboard([Markup.callbackButton("Закрити", id)])
+      Markup.inlineKeyboard([
+        Markup.callbackButton("Коментар", `${id},comment`),
+        Markup.callbackButton("Закрити", `${id},solved`),
+      ])
     );
   }
   getAllFeatures() {

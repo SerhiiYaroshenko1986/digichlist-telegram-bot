@@ -1,35 +1,37 @@
-const WizardScene = require("telegraf/scenes/wizard");
-const Composer = require("telegraf");
+const Scene = require("telegraf/scenes/base");
 const botButtons = require("../keyboards/keyboard");
 const buttons = new botButtons();
-const stepHandler = new Composer();
 const Requests = require("../services/utils");
-var moment = require("moment");
 const serviceRequest = new Requests();
 const Render = require("../services/render");
 const activeRender = new Render();
+const Composer = require("telegraf");
+const stepHandler = new Composer();
 
 let payload = {};
 let defects = [];
 let actionTriger = [];
-module.exports = date = new WizardScene(
-  "date",
-  async (ctx) => {
-    await ctx.reply("Введіть початкову дату (у форматі дд/мм/рррр)");
-    return ctx.wizard.next();
-  },
-  async (ctx) => {
+let firstStep = false;
+let secondStep = false;
+let update = false;
+module.exports = date = new Scene("date");
+date.enter(async (ctx) => {
+  firstStep = true;
+  await ctx.reply("Введіть початкову дату (у форматі дд/мм/рррр)");
+});
+date.on("text", async (ctx) => {
+  if (firstStep) {
     payload.start = ctx.message.text.toString();
+    (firstStep = false), (secondStep = true);
     await ctx.reply("Введіть кінцеву дату (у форматі дд/мм/рррр)");
-    return ctx.wizard.next();
-  },
-  async (ctx) => {
-    payload.end = ctx.message.text;
+  } else if (secondStep) {
+    payload.end = ctx.message.text.toString();
     getDefectsDate(ctx);
-  },
-  buttons.exitKeyboard()
-);
-
+  } else if (update) {
+    activeRender.changeDefectStatus(ctx, ctx.message.text);
+  }
+});
+date.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
 const getDefectsDate = (ctx) => {
   const status = "open";
   const date_type = "open_date";
@@ -48,7 +50,14 @@ const getDefectsDate = (ctx) => {
         ctx.reply("Дефекти відсутні");
         ctx.scene.leave();
       } else {
-        activeRender.getDefectsTemplate(ctx, defects, actionTriger);
+        const feature = ["fixing", "solved"];
+        activeRender.getDefectsTemplate(
+          ctx,
+          defects,
+          actionTriger,
+          feature,
+          buttons.detailsBtn
+        );
         activeRender.createAction(date, actionTriger, defects);
       }
     })
@@ -57,4 +66,13 @@ const getDefectsDate = (ctx) => {
       ctx.scene.leave();
       console.log(err);
     });
+  date.action(["yes", "no"], async (ctx) => {
+    if (ctx.callbackQuery.data === "yes") {
+      update = true;
+      secondStep = false;
+      await ctx.reply("Будь ласка введіть причину (не менше 5 символів)");
+    } else {
+      activeRender.changeDefectStatus(ctx);
+    }
+  });
 };

@@ -10,6 +10,7 @@ const order = require("./scenes/orderScene");
 const active = require("./scenes/activeDefects");
 const searchByDate = require("./scenes/defectsByDateScene");
 const fixingDefects = require("./scenes/fixingDefects");
+const help = require("./scenes/helpScene");
 const botButtons = require("./keyboards/keyboard");
 const mainMenuBtn = new botButtons();
 
@@ -25,6 +26,7 @@ const stage = new Stage([
   fixingDefects,
   order,
   dashRep,
+  help,
 ]);
 
 bot.use(session());
@@ -33,15 +35,19 @@ bot.use(stage.middleware());
 bot.start(({ reply }) => {
   return reply("Вітаю оберіть дію", mainMenuBtn.getMainMenu());
 });
-bot.help((ctx) => ctx.reply("Send me a sticker"));
+bot.help((ctx) => ctx.scene.enter("help"));
 
 bot.hears("реєстрація", async (ctx) => {
   ctx.scene.enter("rme");
 });
+
 bot.hears("додати дефект", async (ctx) => {
   ctx.scene.enter("new");
 });
-
+bot.hears("допомога", async (ctx) => {
+  ctx.scene.enter("help");
+});
+bot.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
 bot.hears("не опрацьовані дефекти за датою", async (ctx) => {
   ctx.scene.enter("date");
 });

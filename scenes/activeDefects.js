@@ -17,7 +17,7 @@ active.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
     ctx.reply("Будь ласка введіть причину");
   } else {
-    activeRender.changeDefectStatus(ctx, payload);
+    activeRender.changeDefectStatus(ctx);
   }
 });
 
@@ -29,7 +29,14 @@ const getDeffects = (ctx) => {
       if (defects.length === 0) {
         ctx.reply("Дефекти відсутні");
       } else {
-        activeRender.getDefectsTemplate(ctx, defects, actionTriger);
+        const feature = ["fixing", "solved"];
+        activeRender.getDefectsTemplate(
+          ctx,
+          defects,
+          actionTriger,
+          feature,
+          buttons.detailsBtn
+        );
         activeRender.createAction(active, actionTriger, defects);
       }
     })
@@ -40,7 +47,7 @@ const getDeffects = (ctx) => {
 };
 active.on("text", async (ctx) => {
   payload.close_reason = ctx.message.text;
-  activeRender.changeDefectStatus(ctx, defectId, payload);
+  activeRender.changeDefectStatus(ctx);
 });
 active.enter(async (ctx) => {
   ctx.reply(
