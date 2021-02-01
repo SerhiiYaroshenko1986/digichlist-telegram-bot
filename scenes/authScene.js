@@ -18,6 +18,7 @@ auth.enter(async (ctx) => {
       }
     })
     .catch((err) => {
+      ctx.scene.leave();
       console.log(err);
     });
 });

@@ -44,7 +44,6 @@ const getDefectsDate = (ctx) => {
   serviceRequest
     .getDefectsByQuery("defect/getByDateAndStatus", params)
     .then((res) => {
-      console.log(res);
       defects = res.data.defects;
       if (defects.length === 0) {
         ctx.reply("Дефекти відсутні");

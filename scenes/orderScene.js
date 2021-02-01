@@ -13,12 +13,12 @@ const createOrder = (ctx) => {
   serviceRequest
     .postChecklist("order/create", payload)
     .then((res) => {
-      console.log(res);
       ctx.reply(`Замовлення успішно збережено`);
     })
     .catch((err) => {
       console.log(err);
       ctx.reply("Замовлення не збережено.");
+      ctx.scene.leave();
     });
 };
 
