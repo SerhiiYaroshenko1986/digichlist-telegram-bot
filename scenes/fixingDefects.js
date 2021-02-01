@@ -70,6 +70,10 @@ const getFixingDefects = (ctx) => {
       }
     })
     .catch((err) => {
+      if (err.response.data === "Unauthorized") {
+        ctx.scene.leave();
+        return ctx.reply("Ви не авторизовані");
+      }
       console.log(err);
     });
 };
