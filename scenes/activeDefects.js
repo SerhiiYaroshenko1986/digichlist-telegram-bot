@@ -42,6 +42,7 @@ const getDeffects = (ctx) => {
     })
     .catch((err) => {
       console.log(err);
+      ctx.scene.leave();
       return ctx.reply("Ви не авторизовані");
     });
 };
