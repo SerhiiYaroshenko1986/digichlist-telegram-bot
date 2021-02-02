@@ -1,9 +1,6 @@
-const config = require("config");
 const Telegraf = require("telegraf");
-module.exports = bot = new Telegraf(config.get("token"));
+const config = require("./config/keys.config");
+module.exports = bot = new Telegraf(config.token);
 
-const PORT = process.env.PORT || 3000;
-const URL = process.env.URL || "https://digihlist-bot.herokuapp.com";
-
-bot.telegram.setWebhook(`${URL}/bot${config.get("token")}`);
-bot.startWebhook(`/bot${config.get("token")}`, null, PORT);
+bot.telegram.setWebhook(`${config.url}/bot${config.token}`);
+bot.startWebhook(`/bot${config.token}`, null, config.port);

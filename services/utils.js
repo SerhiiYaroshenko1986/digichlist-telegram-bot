@@ -1,7 +1,5 @@
 const axios = require("axios");
-const config = require("config");
-const querystring = require("querystring");
-const url = require("url");
+const config = require("../config/keys.config");
 const imageToBase64 = require("image-to-base64");
 
 class Requests {

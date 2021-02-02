@@ -22,31 +22,6 @@ fixDef.action(["yes", "no"], async (ctx) => {
     activeRender.changeDefectStatus(ctx);
   }
 });
-const changeDefectStatus = (ctx, defectId) => {
-  serviceRequest
-    .updateDefectStatus(defectId, payload)
-    .then((res) => {
-      if (res.data.response === "ok") {
-        ctx.replyWithHTML(`Статус дефекту успішно змінено на <b>закритий</b>`);
-      }
-    })
-    .catch((err) => {
-      if (err.response.data.response === "notRepairer") {
-        ctx.reply("У Вас немає доступу для здійснення цієї операції");
-      } else {
-        console.log(err);
-      }
-    });
-};
-// const createAction = () => {
-//   fixDef.action(actionTriger, async (ctx) => {
-//     defectId = ctx.callbackQuery.data;
-//     payload = defects.filter((elem) => elem._id === defectId)[0];
-//     payload.status = "solved";
-//     payload.username = ctx.from.id.toString();
-//     ctx.reply("Бажаєте ввести причину закриття", buttons.yesNoKeyboard());
-//   });
-// };
 
 const getFixingDefects = (ctx) => {
   serviceRequest
@@ -74,6 +49,7 @@ const getFixingDefects = (ctx) => {
         ctx.scene.leave();
         return ctx.reply("Ви не авторизовані");
       }
+      ctx.scene.leave();
       console.log(err);
     });
 };
