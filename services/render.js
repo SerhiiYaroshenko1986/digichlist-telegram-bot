@@ -20,16 +20,13 @@ class Render {
       if (elem.attachment_id !== "") {
         const send = buttonTemplate(elem._id);
         send.parse_mode = "markdown";
-        send.caption = `*Дефект під номером:* ${elem._id}\n*Кімната:* ${
-          elem.room
-        }\n*Опис пошкодження:* ${elem.title}\n*Коментарі:* ${
-          comments ? comments : "відсутні"
-        }`;
+        send.caption = `*Кімната:* ${elem.room}\n*Опис пошкодження:* ${
+          elem.title
+        }\n*Коментарі:* ${comments ? comments : "відсутні"}`;
         ctx.replyWithPhoto(elem.attachment_id, send);
       } else {
         ctx.replyWithHTML(
-          `<b><i>Дефект під номером:</i></b> ${elem._id}\n
-           <b><i>Кімната:</i></b> ${elem.room}\n
+          `<b><i>Кімната:</i></b> ${elem.room}\n
            <b><i>Опис пошкодження:</i></b> ${
              elem.title
            }\n<b><i>Коментарі:</i></b>${comments ? comments : "відсутні"}`,

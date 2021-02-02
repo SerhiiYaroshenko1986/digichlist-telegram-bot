@@ -9,7 +9,6 @@ const bot = require("../bot");
 
 const payload = {};
 const createOrder = (ctx) => {
-  console.log(payload);
   serviceRequest
     .postChecklist("order/create", payload)
     .then((res) => {

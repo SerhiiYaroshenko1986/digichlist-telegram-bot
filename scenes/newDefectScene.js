@@ -18,7 +18,7 @@ const sendMessageToFixer = (data) => {
         chatIdArr.map((chatId) => {
           bot.telegram.sendMessage(
             chatId,
-            `Додано новий дефект \nпід номером ${data.defect._id}\nОпис пошкоджень: ${data.defect.title}`
+            `Додано новий дефект\nОпис пошкоджень: ${data.defect.title}`
           );
           if (data.defect.attachment_id !== "") {
             bot.telegram.sendPhoto(chatId, data.defect.attachment_id);
@@ -35,9 +35,7 @@ const createDefect = (ctx) => {
     .postRequest("defect/create", payload)
     .then((res) => {
       if (res.data.response === "ok") {
-        ctx.reply(
-          `Дефект успішно збережено\nпід номером ${res.data.defect._id}`
-        );
+        ctx.reply(`Дефект успішно збережено`);
         sendMessageToFixer(res.data);
       }
     })
