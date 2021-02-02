@@ -20,7 +20,6 @@ class Render {
       if (elem.attachment_id !== "") {
         const send = buttonTemplate(elem._id);
         send.parse_mode = "markdown";
-
         send.caption = `*Дефект під номером:* ${elem._id}\n*Кімната:* ${
           elem.room
         }\n*Опис пошкодження:* ${elem.title}\n*Коментарі:* ${
