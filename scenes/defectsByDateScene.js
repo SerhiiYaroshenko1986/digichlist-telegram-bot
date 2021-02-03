@@ -17,12 +17,17 @@ let update = false;
 module.exports = date = new Scene("date");
 date.enter(async (ctx) => {
   firstStep = true;
-  await ctx.reply("Введіть початкову дату (у форматі дд/мм/рррр)");
+  await ctx.reply(
+    "Введіть початкову дату (у форматі дд/мм/рррр)",
+    buttons.exitKeyboard()
+  );
 });
+date.hears("⏪ в головне меню", (ctx) => ctx.scene.enter("dashRep"));
 date.on("text", async (ctx) => {
   if (firstStep) {
     payload.start = ctx.message.text.toString();
-    (firstStep = false), (secondStep = true);
+    firstStep = false;
+    secondStep = true;
     await ctx.reply("Введіть кінцеву дату (у форматі дд/мм/рррр)");
   } else if (secondStep) {
     payload.end = ctx.message.text.toString();
@@ -31,7 +36,7 @@ date.on("text", async (ctx) => {
     activeRender.changeDefectStatus(ctx, ctx.message.text);
   }
 });
-date.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
+
 const getDefectsDate = (ctx) => {
   const status = "open";
   const date_type = "open_date";
@@ -44,6 +49,7 @@ const getDefectsDate = (ctx) => {
   serviceRequest
     .getDefectsByQuery("defect/getByDateAndStatus", params)
     .then((res) => {
+      console.log(res.data);
       defects = res.data.defects;
       if (defects.length === 0) {
         ctx.reply("Дефекти відсутні");

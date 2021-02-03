@@ -12,6 +12,8 @@ auth.enter(async (ctx) => {
           ctx.scene.enter("dashRep");
         } else if (res.data.user.position === "Cleaner") {
           ctx.scene.enter("dash");
+        } else if (res.data.user.position === "Merchandiser") {
+          ctx.scene.enter("dashMerch");
         } else if (res.data.user.position === "None") {
           ctx.reply(
             "Для Вас ще не призначена посада будь ласка зверніться до адміністратора"

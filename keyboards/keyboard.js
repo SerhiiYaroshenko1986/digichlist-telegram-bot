@@ -2,12 +2,12 @@ const { Markup, Extra } = require("telegraf");
 
 class BotButtons {
   getMainMenu() {
-    return Markup.keyboard([["реєстрація", "вхід"], ["допомога"]])
+    return Markup.keyboard([["📖 реєстрація", "🔐 вхід"], ["💬 допомога"]])
       .resize()
       .extra();
   }
   exitKeyboard() {
-    return Markup.keyboard([["в головне меню"]])
+    return Markup.keyboard([["⏪ в головне меню"]])
       .resize()
       .extra();
   }
@@ -35,17 +35,27 @@ class BotButtons {
   }
   getAllFeatures() {
     return Markup.keyboard([
-      ["додати дефект", "не опрацьовані дефекти"],
-      ["не опрацьовані дефекти за датою", "дефекти в роботі"],
-      ["замовити"],
+      ["▶️ додати дефект", "⏸️ не опрацьовані дефекти"],
+      ["📆 не опрацьовані дефекти за датою", "🛠 дефекти в роботі"],
+      ["📝 замовити"],
     ])
       .resize()
       .extra();
   }
   getCleanerFeatures() {
-    return Markup.keyboard([["додати дефект", "замовити"]])
+    return Markup.keyboard([["▶️ додати дефект", "📝 замовити"]])
       .resize()
       .extra();
+  }
+  getMerchFeatures() {
+    return Markup.keyboard([["⏸️ не опрацьовані замовлення", "📝 замовити"]])
+      .resize()
+      .extra();
+  }
+  ordersBtn(id) {
+    return Extra.markup(
+      Markup.inlineKeyboard([Markup.callbackButton("Виконано", id)])
+    );
   }
 }
 module.exports = BotButtons;

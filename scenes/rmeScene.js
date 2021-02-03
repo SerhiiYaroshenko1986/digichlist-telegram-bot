@@ -18,7 +18,7 @@ rme.enter(async (ctx) => {
       if (err.response.data.message.includes("duplicate key")) {
         ctx.reply(`Ви уже зареєстровані`);
       } else {
-        ctx.reply(`Сталась помилка на серсері спробуйте пізніше`);
+        ctx.reply(`Сталась помилка на сервері спробуйте пізніше`);
       }
       ctx.scene.leave();
     });

@@ -13,7 +13,10 @@ let actionTriger = [];
 let defectId = "";
 let payload = {};
 let checkAction = false;
-fixDef.hears("в головне меню", (ctx) => ctx.scene.enter("dashRep"));
+fixDef.hears("⏪ в головне меню", (ctx) => {
+  ctx.scene.leave();
+  ctx.scene.enter("dashRep");
+});
 fixDef.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
     checkAction = true;
@@ -59,7 +62,6 @@ fixDef.on("text", async (ctx) => {
     activeRender.changeDefectStatus(ctx, closeReason);
   } else {
     checkAction = false;
-    console.log(ctx.message.text);
     const comments = [
       {
         user: "",

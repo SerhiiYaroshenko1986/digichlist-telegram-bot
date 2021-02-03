@@ -6,8 +6,8 @@ class Requests {
   postRequest(url, body) {
     return axios.post(config.baseUrl + url, body);
   }
-  getRepairer(url) {
-    return axios.get(`${config.baseUrl}user/getByPosition/Repairer`);
+  getPosition(position) {
+    return axios.get(`${config.baseUrl}user/getByPosition/${position}`);
   }
   isAuth(url) {
     return axios.get(`${config.baseUrl}${url}`);
@@ -18,7 +18,7 @@ class Requests {
   getPhoto(path) {
     return imageToBase64(config.photoUrl + path);
   }
-  getAllDefects(url) {
+  getAllEntities(url) {
     return axios.get(config.baseUrl + url);
   }
   getDefectsByQuery(url, params) {
@@ -35,6 +35,9 @@ class Requests {
   }
   postChecklist(url, body) {
     return axios.post(config.baseUrl + url, body);
+  }
+  updateOrderStatus(id, body) {
+    return axios.patch(config.baseUrl + "order/update/" + id, body);
   }
 }
 

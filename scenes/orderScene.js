@@ -8,10 +8,30 @@ const serviceRequest = new Requests();
 const bot = require("../bot");
 
 const payload = {};
+const sendMessageToMerch = (order) => {
+  serviceRequest
+    .getPosition("Merchandiser")
+    .then((res) => {
+      const merchArr = res.data.users;
+      if (merchArr.length !== 0) {
+        const chatIdArr = merchArr.map((elem) => elem.chat_id);
+        chatIdArr.map((chatId) => {
+          bot.telegram.sendMessage(
+            chatId,
+            `Додано нове замовлення\nНазва предмету: ${order.title}\nКількість: ${order.quantity}\nКоментар: ${order.note}`
+          );
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 const createOrder = (ctx) => {
   serviceRequest
     .postChecklist("order/create", payload)
     .then((res) => {
+      sendMessageToMerch(res.data.order);
       ctx.reply(`Замовлення успішно збережено`);
     })
     .catch((err) => {

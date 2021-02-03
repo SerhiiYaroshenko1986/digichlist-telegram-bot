@@ -16,6 +16,8 @@ class Render {
       actionTriger.push(`${elem._id},${feature[1]}`);
       if (elem.comments.length !== 0) {
         comments = elem.comments.map((item) => item.message).join(", ");
+      } else {
+        comments = null;
       }
       if (elem.attachment_id !== "") {
         const send = buttonTemplate(elem._id);
@@ -26,10 +28,11 @@ class Render {
         ctx.replyWithPhoto(elem.attachment_id, send);
       } else {
         ctx.replyWithHTML(
-          `<b><i>Кімната:</i></b> ${elem.room}\n
-           <b><i>Опис пошкодження:</i></b> ${
-             elem.title
-           }\n<b><i>Коментарі:</i></b>${comments ? comments : "відсутні"}`,
+          `<b><i>Кімната:</i></b> ${
+            elem.room
+          }\n<b><i>Опис пошкодження: </i></b> ${
+            elem.title
+          }\n<b><i>Коментарі: </i></b>${comments ? comments : "відсутні"}`,
           buttonTemplate(elem._id)
         );
       }
@@ -42,7 +45,6 @@ class Render {
     serviceRequest
       .updateDefectStatus(this.defect_id, this.payload)
       .then((res) => {
-        console.log(res);
         if (res.data.response === "ok") {
           const changeStatus =
             this.payload.status === "fixing" ? "в роботі" : "закритий";
@@ -67,6 +69,8 @@ class Render {
             "Опис занадто короткий будь ласка введіть не менше 5 символів"
           );
         } else {
+          ctx.reply("Сталась помилка на сервері спробуйте пізніше");
+          ctx.scene.leave();
           console.log(err);
         }
       });
@@ -82,6 +86,8 @@ class Render {
         this.addComment(ctx);
       })
       .catch((err) => {
+        ctx.reply("Сталась помилка на сервері спробуйте пізніше");
+        ctx.scene.enter("dashRep");
         console.log(err);
       });
   }
@@ -94,6 +100,8 @@ class Render {
         }
       })
       .catch((err) => {
+        ctx.reply("Сталась помилка на сервері спробуйте пізніше");
+        ctx.scene.leave();
         console.log(err);
       });
   }

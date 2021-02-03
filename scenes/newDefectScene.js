@@ -10,7 +10,7 @@ const bot = require("../bot");
 const payload = {};
 const sendMessageToFixer = (data) => {
   serviceRequest
-    .getRepairer()
+    .getPosition("Repairer")
     .then((res) => {
       const fixersArr = res.data.users;
       if (fixersArr.length !== 0) {
@@ -18,7 +18,7 @@ const sendMessageToFixer = (data) => {
         chatIdArr.map((chatId) => {
           bot.telegram.sendMessage(
             chatId,
-            `Додано новий дефект\nОпис пошкоджень: ${data.defect.title}`
+            `Додано новий дефект\nКімната: ${data.defect.room}\nОпис пошкоджень: ${data.defect.title}`
           );
           if (data.defect.attachment_id !== "") {
             bot.telegram.sendPhoto(chatId, data.defect.attachment_id);
