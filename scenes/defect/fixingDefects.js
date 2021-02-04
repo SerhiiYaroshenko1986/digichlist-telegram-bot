@@ -14,8 +14,8 @@ let defectId = "";
 let payload = {};
 let checkAction = false;
 fixDef.hears("⏪ в головне меню", (ctx) => {
-  ctx.scene.leave();
   ctx.scene.enter("dashRep");
+  ctx.scene.leave();
 });
 fixDef.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {
@@ -57,6 +57,10 @@ const getFixingDefects = (ctx) => {
     });
 };
 fixDef.on("text", async (ctx) => {
+  if (ctx.message.text === "⏪ в головне меню") {
+    ctx.scene.enter("dashRep");
+    ctx.scene.leave();
+  }
   if (checkAction) {
     const closeReason = ctx.message.text;
     activeRender.changeDefectStatus(ctx, closeReason);

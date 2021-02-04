@@ -73,4 +73,8 @@ bot.hears("📝 замовити", async (ctx) => {
 bot.hears("📆 не опрацьовані замовлення за датою", async (ctx) => {
   ctx.scene.enter("dateOrder");
 });
+bot.hears("⏪ в головне меню", (ctx) => {
+  ctx.scene.enter("dashRep");
+  ctx.scene.leave();
+});
 bot.launch();
