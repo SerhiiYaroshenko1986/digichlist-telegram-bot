@@ -16,6 +16,8 @@ const help = require("./scenes/helpScene");
 const ordersByDate = require("./scenes/order/orderByDate");
 const botButtons = require("./keyboards/keyboard");
 const mainMenuBtn = new botButtons();
+const Requests = require("./services/utils");
+const serviceRequest = new Requests();
 
 //bot.use(Telegraf.log());
 
@@ -74,7 +76,19 @@ bot.hears("📆 не опрацьовані замовлення за датою
   ctx.scene.enter("dateOrder");
 });
 bot.hears("⏪ в головне меню", (ctx) => {
-  ctx.scene.enter("dashRep");
-  ctx.scene.leave();
+  serviceRequest
+    .isAuth(`user/getByUsername/${ctx.from.id.toString()}`)
+    .then((res) => {
+      if (res.data.user.position === "Repairer") {
+        ctx.scene.leave();
+        ctx.scene.enter("dashRep");
+      } else if (res.data.user.position === "Cleaner") {
+        ctx.scene.leave();
+        ctx.scene.enter("dash");
+      } else if (res.data.user.position === "Merchandiser") {
+        ctx.scene.leave();
+        ctx.scene.enter("dashMerch");
+      }
+    });
 });
 bot.launch();
