@@ -1,10 +1,10 @@
 const Scene = require("telegraf/scenes/base");
-const Requests = require("../services/utils");
+const Requests = require("../../services/utils");
 const serviceRequest = new Requests();
-const Render = require("../services/render");
+const Render = require("../../services/defect");
 const activeRender = new Render();
 
-const botButtons = require("../keyboards/keyboard");
+const botButtons = require("../../keyboards/keyboard");
 const buttons = new botButtons();
 
 module.exports = active = new Scene("active");
@@ -26,7 +26,7 @@ active.action(["yes", "no"], async (ctx) => {
 
 const getDeffects = (ctx) => {
   serviceRequest
-    .getDefectsByQuery("defect/getByStatus/", { status: "open" })
+    .getEntitiesByQuery("defect/getByStatus/", { status: "open" })
     .then((res) => {
       defects = res.data.defects;
       if (defects.length === 0) {

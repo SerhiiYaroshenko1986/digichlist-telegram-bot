@@ -1,12 +1,10 @@
 const Scene = require("telegraf/scenes/base");
-const botButtons = require("../keyboards/keyboard");
+const botButtons = require("../../keyboards/keyboard");
 const buttons = new botButtons();
-const Requests = require("../services/utils");
+const Requests = require("../../services/utils");
 const serviceRequest = new Requests();
-const Render = require("../services/render");
+const Render = require("../../services/defect");
 const activeRender = new Render();
-const Composer = require("telegraf");
-const stepHandler = new Composer();
 
 let payload = {};
 let defects = [];
@@ -43,13 +41,12 @@ const getDefectsDate = (ctx) => {
   params = {
     status: status,
     date_type: date_type,
-    start: payload.start.split("-").reverse().join("-"),
-    end: payload.end.split("-").reverse().join("-"),
+    start: payload.start.split("/").reverse().join("-"),
+    end: payload.end.split("/").reverse().join("-"),
   };
   serviceRequest
-    .getDefectsByQuery("defect/getByDateAndStatus", params)
+    .getEntitiesByQuery("defect/getByDateAndStatus", params)
     .then((res) => {
-      console.log(res.data);
       defects = res.data.defects;
       if (defects.length === 0) {
         ctx.reply("Дефекти відсутні");

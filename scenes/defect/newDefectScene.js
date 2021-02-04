@@ -1,11 +1,11 @@
 const WizardScene = require("telegraf/scenes/wizard");
 const Composer = require("telegraf");
-const botButtons = require("../keyboards/keyboard");
+const botButtons = require("../../keyboards/keyboard");
 const buttons = new botButtons();
 const stepHandler = new Composer();
-const Requests = require("../services/utils");
+const Requests = require("../../services/utils");
 const serviceRequest = new Requests();
-const bot = require("../bot");
+const bot = require("../../bot");
 
 const payload = {};
 const sendMessageToFixer = (data) => {

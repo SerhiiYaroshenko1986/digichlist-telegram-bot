@@ -1,8 +1,8 @@
 const Scene = require("telegraf/scenes/base");
-const Requests = require("../services/utils");
+const Requests = require("../../services/utils");
 const serviceRequest = new Requests();
 
-const botButtons = require("../keyboards/keyboard");
+const botButtons = require("../../keyboards/keyboard");
 const buttons = new botButtons();
 
 module.exports = dash = new Scene("dash");

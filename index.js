@@ -1,18 +1,19 @@
 const Telegraf = require("telegraf");
 const { Stage, session } = Telegraf;
 const bot = require("./bot");
-const allOrders = require("./scenes/allOrdersScene");
+const allOrders = require("./scenes/order/allOrdersScene");
 const userInfo = require("./scenes/rmeScene");
-const defect = require("./scenes/newDefectScene");
+const defect = require("./scenes/defect/newDefectScene");
 const auth = require("./scenes/authScene");
-const dash = require("./scenes/dashboardCleaner");
-const dashRep = require("./scenes/dashboardRepairer");
-const dashMerch = require("./scenes/dashMerchScene");
-const order = require("./scenes/orderScene");
-const active = require("./scenes/activeDefects");
-const searchByDate = require("./scenes/defectsByDateScene");
-const fixingDefects = require("./scenes/fixingDefects");
+const dash = require("./scenes/dashboard/dashboardCleaner");
+const dashRep = require("./scenes/dashboard/dashboardRepairer");
+const dashMerch = require("./scenes/dashboard/dashMerchScene");
+const order = require("./scenes/order/orderScene");
+const active = require("./scenes/defect/activeDefects");
+const searchByDate = require("./scenes/defect/defectsByDateScene");
+const fixingDefects = require("./scenes/defect/fixingDefects");
 const help = require("./scenes/helpScene");
+const ordersByDate = require("./scenes/order/orderByDate");
 const botButtons = require("./keyboards/keyboard");
 const mainMenuBtn = new botButtons();
 
@@ -31,6 +32,7 @@ const stage = new Stage([
   help,
   dashMerch,
   allOrders,
+  ordersByDate,
 ]);
 
 bot.use(session());
@@ -67,5 +69,8 @@ bot.hears("⏸️ не опрацьовані дефекти", async (ctx) => {
 });
 bot.hears("📝 замовити", async (ctx) => {
   ctx.scene.enter("order");
+});
+bot.hears("📆 не опрацьовані замовлення за датою", async (ctx) => {
+  ctx.scene.enter("dateOrder");
 });
 bot.launch();

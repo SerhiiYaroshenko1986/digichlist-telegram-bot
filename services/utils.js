@@ -21,7 +21,7 @@ class Requests {
   getAllEntities(url) {
     return axios.get(config.baseUrl + url);
   }
-  getDefectsByQuery(url, params) {
+  getEntitiesByQuery(url, params) {
     return axios.get(config.baseUrl + url, { params: params });
   }
   getDefectsById(url, id) {
