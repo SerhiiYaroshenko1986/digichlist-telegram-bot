@@ -14,7 +14,7 @@ let defectId = "";
 let actionTriger = [];
 active.hears("⏪ в головне меню", (ctx) => {
   ctx.scene.leave();
-  ctx.scene.enter("dashRep");
+  ctx.scene.enter("dash");
 });
 active.action(["yes", "no"], async (ctx) => {
   if (ctx.callbackQuery.data === "yes") {

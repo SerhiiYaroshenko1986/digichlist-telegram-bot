@@ -8,16 +8,12 @@ auth.enter(async (ctx) => {
     .isAuth(`user/getByUsername/${ctx.from.id.toString()}`)
     .then((res) => {
       if (res.data.message === "User found") {
-        if (res.data.user.position === "Repairer") {
-          ctx.scene.enter("dashRep");
-        } else if (res.data.user.position === "Cleaner") {
-          ctx.scene.enter("dash");
-        } else if (res.data.user.position === "Merchandiser") {
-          ctx.scene.enter("dashMerch");
-        } else if (res.data.user.position === "None") {
+        if (res.data.user.position === "None") {
           ctx.reply(
             "Для Вас ще не призначена посада будь ласка зверніться до адміністратора"
           );
+        } else {
+          ctx.scene.enter("dash");
         }
       } else if (res.data.message === "No user") {
         ctx.reply("Ви ще не зареєстровані");

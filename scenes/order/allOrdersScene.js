@@ -11,7 +11,7 @@ let ordersData = [];
 let actionTriger = [];
 allOrders.hears("⏪ в головне меню", (ctx) => {
   ctx.scene.leave();
-  ctx.scene.enter("dashMerch");
+  ctx.scene.enter("dash");
 });
 
 const getOrders = (ctx) => {

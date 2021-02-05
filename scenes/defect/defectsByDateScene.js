@@ -20,7 +20,7 @@ date.enter(async (ctx) => {
     buttons.exitKeyboard()
   );
 });
-date.hears("⏪ в головне меню", (ctx) => ctx.scene.enter("dashRep"));
+date.hears("⏪ в головне меню", (ctx) => ctx.scene.enter("dash"));
 date.on("text", async (ctx) => {
   if (firstStep) {
     payload.start = ctx.message.text.toString();

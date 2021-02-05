@@ -48,7 +48,7 @@ dateOrder.enter(async (ctx) => {
     buttons.exitKeyboard()
   );
 });
-dateOrder.hears("⏪ в головне меню", (ctx) => ctx.scene.enter("dashMerch"));
+dateOrder.hears("⏪ в головне меню", (ctx) => ctx.scene.enter("dash"));
 dateOrder.on("text", async (ctx) => {
   if (firstStep) {
     payload.start = ctx.message.text.toString();

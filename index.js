@@ -5,9 +5,9 @@ const allOrders = require("./scenes/order/allOrdersScene");
 const userInfo = require("./scenes/rmeScene");
 const defect = require("./scenes/defect/newDefectScene");
 const auth = require("./scenes/authScene");
-const dash = require("./scenes/dashboard/dashboardCleaner");
-const dashRep = require("./scenes/dashboard/dashboardRepairer");
-const dashMerch = require("./scenes/dashboard/dashMerchScene");
+const dash = require("./scenes/dashboard/dashScene");
+// const dashRep = require("./scenes/dashboard/dashboardRepairer");
+// const dashMerch = require("./scenes/dashboard/dashMerchScene");
 const order = require("./scenes/order/orderScene");
 const active = require("./scenes/defect/activeDefects");
 const searchByDate = require("./scenes/defect/defectsByDateScene");
@@ -16,8 +16,6 @@ const help = require("./scenes/helpScene");
 const ordersByDate = require("./scenes/order/orderByDate");
 const botButtons = require("./keyboards/keyboard");
 const mainMenuBtn = new botButtons();
-const Requests = require("./services/utils");
-const serviceRequest = new Requests();
 
 //bot.use(Telegraf.log());
 
@@ -30,9 +28,7 @@ const stage = new Stage([
   searchByDate,
   fixingDefects,
   order,
-  dashRep,
   help,
-  dashMerch,
   allOrders,
   ordersByDate,
 ]);
@@ -76,19 +72,6 @@ bot.hears("📆 не опрацьовані замовлення за датою
   ctx.scene.enter("dateOrder");
 });
 bot.hears("⏪ в головне меню", (ctx) => {
-  serviceRequest
-    .isAuth(`user/getByUsername/${ctx.from.id.toString()}`)
-    .then((res) => {
-      if (res.data.user.position === "Repairer") {
-        ctx.scene.leave();
-        ctx.scene.enter("dashRep");
-      } else if (res.data.user.position === "Cleaner") {
-        ctx.scene.leave();
-        ctx.scene.enter("dash");
-      } else if (res.data.user.position === "Merchandiser") {
-        ctx.scene.leave();
-        ctx.scene.enter("dashMerch");
-      }
-    });
+  ctx.scene.enter("dash");
 });
 bot.launch();

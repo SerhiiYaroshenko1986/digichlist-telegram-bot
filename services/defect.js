@@ -87,7 +87,7 @@ class Render {
       })
       .catch((err) => {
         ctx.reply("Сталась помилка на сервері спробуйте пізніше");
-        ctx.scene.enter("dashRep");
+        ctx.scene.enter("dash");
         console.log(err);
       });
   }

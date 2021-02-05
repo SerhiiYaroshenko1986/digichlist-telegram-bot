@@ -37,7 +37,7 @@ class OrderRender {
             ctx.reply("Сталась помилка спробуйте пізніше");
           }
           ctx.scene.leave();
-          ctx.scene.enter("dashMerch");
+          ctx.scene.enter("dash");
         });
     });
   }
